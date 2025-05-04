@@ -1,0 +1,17 @@
+<!doctype html>
+<html>
+<head>
+  <script src="https://unpkg.com/htmx.org@1.9.5"></script>
+</head>
+<body>
+  <h1>People</h1>
+  <form hx-post="/add" hx-target="#people" hx-swap="innerHTML">
+    <input name="name" placeholder="Enter a name" required>
+    <button type="submit">Add</button>
+  </form>
+
+  <div id="people">
+    {% include "_rows.html" %}
+  </div>
+</body>
+</html>
