@@ -1,5 +1,5 @@
 [project]
-name = "sqlhtmx"
+name = "sqlflask"
 version = "0.1.0"
 description = "A minimal Flask + SQLite + HTMX project"
 dependencies = [
