@@ -1,5 +1,5 @@
 # sqlflask.py
-from flask import Flask, render_template, request, redirect, url_for, g
+from flask import Flask, render_template, request, redirect, url_for, g, send_from_directory
 import sqlite3
 
 app = Flask(__name__)
@@ -23,6 +23,10 @@ def index():
     db = get_db()
     people = db.execute("SELECT id, name FROM people ORDER BY id DESC").fetchall()
     return render_template("index.html", people=people)
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory('static', 'favicon.ico')
 
 @app.route("/add", methods=["POST"])
 def add():
