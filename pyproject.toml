@@ -4,5 +4,5 @@ version = "0.1.0"
 description = "A minimal Flask + SQLite + HTMX project"
 dependencies = [
   "flask",
-  "git+https://github.com/simonw/sql-utils.git"
+  "git+https://github.com/simonw/sqlite-utils.git"
 ]
