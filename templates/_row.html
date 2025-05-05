@@ -2,8 +2,16 @@
 <tr id="row-{{ person.id }}">
     <td>{{ person.name }}</td>
     <td>
-      <button hx-get="/edit/{{ person.id }}" hx-target="#row-{{ person.id }}" hx-swap="outerHTML">Edit</button>
-      <button hx-delete="/delete/{{ person.id }}" hx-target="#people" hx-swap="innerHTML">Delete</button>
+      <button 
+        hx-get="/edit/{{ person.id }}" 
+        hx-target="#row-{{ person.id }}" 
+        hx-swap="outerHTML">
+        Edit
+      </button>
+      <button 
+        hx-delete="/delete/{{ person.id }}" 
+        hx-target="#people" 
+        hx-swap="innerHTML">Delete</button>
     </td>
   </tr>
   

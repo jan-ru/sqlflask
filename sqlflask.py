@@ -24,6 +24,16 @@ def index():
     people = db.execute("SELECT id, name FROM people ORDER BY id DESC").fetchall()
     return render_template("index.html", people=people)
 
+#@app.route("/")
+#def main_page():
+#    db = get_db()
+#    people = db.execute("SELECT id, name FROM people ORDER BY id DESC").fetchall()
+#    return render_template("main.html", people=people)
+
+@app.route("/table")
+def show_table():
+    return render_template("table.html")
+
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory('static', 'favicon.ico')

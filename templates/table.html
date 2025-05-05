@@ -1,17 +1,25 @@
-<div id="user-table"></div>
+<!-- templates/table.html -->
+{% extends "base.html" %}
 
-<script>
-  // Initialize Tabulator after DOM is inserted
-  document.addEventListener("DOMContentLoaded", function () {
-    new Tabulator("#user-table", {
-      ajaxURL: "/api/data",
-      height: "300px",
-      layout: "fitColumns",
-      columns: [
-        { title: "ID", field: "id", width: 50 },
-        { title: "Name", field: "name" },
-        { title: "Age", field: "age" }
-      ]
+{% block title %}Tabulator Table{% endblock %}
+
+{% block content %}
+  <h2>User Table (Tabulator)</h2>
+
+  <div id="user-table"></div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      new Tabulator("#user-table", {
+        ajaxURL: "/api/data",
+        height: "300px",
+        layout: "fitColumns",
+        columns: [
+          { title: "ID", field: "id", width: 50 },
+          { title: "Name", field: "name" },
+          { title: "Age", field: "age" }
+        ]
+      });
     });
-  });
-</script>
+  </script>
+{% endblock %}
