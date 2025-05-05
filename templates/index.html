@@ -1,7 +1,12 @@
 <!doctype html>
-<html>
+<html lang="en">
 <head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>People List</title>
   <script src="https://unpkg.com/htmx.org@1.9.5"></script>
+  <script src="https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js"></script>
+  <link href="https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css" rel="stylesheet">
 </head>
 <body>
   <h1>People</h1>
@@ -13,5 +18,6 @@
   <div id="people">
     {% include "_rows.html" %}
   </div>
+  <div id="edit-form"></div>
 </body>
 </html>

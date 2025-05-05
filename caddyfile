@@ -1,0 +1,15 @@
+{
+    # Optional global options
+    auto_https disable_redirect    # Avoid HTTPS redirect locally
+    email janru.muller@gmail.com   # Needed for Let's Encrypt in production
+}
+
+# Domain for production (use env var for flexibility)
+https://{$DOMAIN} {
+    reverse_proxy localhost:8000
+}
+
+# Fallback for local development
+:80 {
+    reverse_proxy localhost:8000
+}

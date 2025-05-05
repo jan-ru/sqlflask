@@ -1,5 +1,7 @@
-<ul>
-    {% for row in rows %}
-      <li>{{ row.id }} — {{ row.name }}</li>
-    {% endfor %}
-</ul>
+<!-- _rows.html -->
+
+{% for person in people %}
+  {% include "_row.html" %}
+{% endfor %}
+
+
