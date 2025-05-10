@@ -6,6 +6,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width">
   <title>{% block title %}My App{% endblock %}</title>
   <script src="https://unpkg.com/htmx.org@1.9.5"></script>
   <link href="https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css" rel="stylesheet">
@@ -15,8 +16,11 @@
   <header>
     <h1>{% block header %}Spreadsheet Web App{% endblock %}</h1>
     <nav>
-      <a href="{{ url_for('index') }}">Main</a> |
-      <a href="{{ url_for('show_table') }}">Table</a>
+      <a href="{{ url_for('databases') }}">Databases</a> |
+      <a href="{{ url_for('tables') }}">Tables</a> |
+      <a href="{{ url_for('columns') }}">Columns</a> |
+      <a href="{{ url_for('index') }}">Rows</a> |
+      <a href="{{ url_for('show_table') }}">Tabulator</a>
     </nav>
     <hr>
   </header>
@@ -26,7 +30,8 @@
   </main>
   
   <footer>
-    <p>&copy; 2025 Your App</p>
+    <hr>
+    <p>&copy; 2025 Exact-Excel Bridge, icon instead of copyright</p>
   </footer>
 </body>
 </html>

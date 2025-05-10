@@ -22,17 +22,62 @@ def close_connection(exception):
 def index():
     db = get_db()
     people = db.execute("SELECT id, name FROM people ORDER BY id DESC").fetchall()
-    return render_template("index.html", people=people)
+    return render_template("" \
+    "index.html",
+    context="Rows",
+    people=people)
 
-#@app.route("/")
-#def main_page():
-#    db = get_db()
-#    people = db.execute("SELECT id, name FROM people ORDER BY id DESC").fetchall()
-#    return render_template("main.html", people=people)
+@app.route("/databases")
+def databases():
+    # Example list of databases (replace with actual logic)
+    databases = ["db1.sqlite", "db2.sqlite", "db3.sqlite"]
+    return render_template(
+        "index.html",
+        context="Databases",
+        databases=databases
+    )
 
-@app.route("/table")
+@app.route("/tables", methods=["GET", "POST"])
+def tables():
+    db = get_db()
+    if request.method == "POST":
+        table_name = request.form["name"]
+        # Create a new table in the current database
+        db.execute(f"CREATE TABLE IF NOT EXISTS {table_name} (id INTEGER PRIMARY KEY, name TEXT)")
+        db.commit()
+    # Query to get all table names in the database
+    tables = db.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
+    ).fetchall()
+    return render_template(
+        "index.html",
+        context="Tables",
+        item_list=[table["name"] for table in tables]  # Pass table names as item_list
+    )
+
+@app.route("/columns")
+def columns():
+    # Example list of columns (replace with actual logic)
+    columns = ["Column1", "Column2", "Column3"]
+    return render_template(
+        "index.html",
+        context="Columns",
+        fields=columns
+    )
+
+@app.route("/fields")
+def fields():
+    # Example list of fields (replace with actual logic)
+    fields = ["id", "name", "created_at"]
+    return render_template(
+        "index.html",
+        context="Fields",
+        fields=fields
+    )
+
+@app.route("/tabulator")
 def show_table():
-    return render_template("table.html")
+    return render_template("tabulator.html")
 
 @app.route('/favicon.ico')
 def favicon():

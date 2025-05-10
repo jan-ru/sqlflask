@@ -1,22 +1,73 @@
 {% extends "base.html" %}
 
-{% block title %}People List{% endblock %}
+{% block title %}{{ context }}{% endblock %}
 
 {% block content %}
-  <form hx-post="/add" hx-target="#people" hx-swap="innerHTML">
+  <h2>{{ context }}</h2>
+  <p>
+    {% if context == "Rows" %}
+      This is the Rows page.
+    {% elif context == "Databases" %}
+      This is the Databases page.
+    {% elif context == "Tables" %}
+      This is the Tables page.
+    {% elif context == "Columns" %}
+      This is the Columns page.
+    {% elif context == "Fields" %}
+      This is the Fields page.
+    {% endif %}
+  </p>
+
+  
+  {% if context == "Databases" %}
+    <form action="/databases" method="post">
+  {% elif context == "Tables" %}
+    <form action="/tables" method="post">
+  {% elif context == "Columns" %}
+    <form action="/columns" method="post">
+  {% elif context == "Fields" %}
+    <form action="/fields" method="post">
+  {% else %}
+    <form hx-post="/add" hx-target="#people" hx-swap="innerHTML" method="post">
+  {% endif %}
+    
     <input name="name" placeholder="Enter a name" required>
     <button type="submit">Add</button>
   </form>
 
+  {% if context in ["Databases", "Tables", "Columns", "Rows"] %}
   <table>
     <thead>
       <tr>
-        <th>Name</th>
+        <th>{{ context[:-1] }}</th>
         <th>Actions</th>
       </tr>
     </thead>
     <tbody id="people">
-      {% include "_rows.html" %}
+      {% if context == "Rows" %}
+        {% include "_rows.html" %}
+      {% else %}
+        {% for item in item_list %}
+          <tr id="row-{{ item }}">
+            <td>{{ item }}</td>
+            <td>
+              <button 
+                hx-get="/edit_{{ url_base }}/{{ item }}" 
+                hx-target="#row-{{ item }}" 
+                hx-swap="outerHTML">
+                Edit
+              </button>
+              <button 
+                hx-delete="/delete_{{ url_base }}/{{ item }}" 
+                hx-target="#people" 
+                hx-swap="innerHTML">
+                Delete
+              </button>
+            </td>
+          </tr>
+        {% endfor %}
+      {% endif %}
     </tbody>
   </table>
+{% endif %}
 {% endblock %}
