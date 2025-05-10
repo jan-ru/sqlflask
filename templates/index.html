@@ -1,23 +1,22 @@
-<!doctype html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>People List</title>
-  <script src="https://unpkg.com/htmx.org@1.9.5"></script>
-  <script src="https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js"></script>
-  <link href="https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css" rel="stylesheet">
-</head>
-<body>
-  <h1>People</h1>
+{% extends "base.html" %}
+
+{% block title %}People List{% endblock %}
+
+{% block content %}
   <form hx-post="/add" hx-target="#people" hx-swap="innerHTML">
     <input name="name" placeholder="Enter a name" required>
     <button type="submit">Add</button>
   </form>
 
-  <div id="people">
-    {% include "_rows.html" %}
-  </div>
-  <div id="edit-form"></div>
-</body>
-</html>
+  <table>
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody id="people">
+      {% include "_rows.html" %}
+    </tbody>
+  </table>
+{% endblock %}

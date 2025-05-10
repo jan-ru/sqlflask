@@ -2,19 +2,20 @@
 <!-- shall contain common elements            -->
 <!-- specifically head, navigation and footer -->
 <!-- base, main, index seem to overlap, to be resolved -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <title>{% block title %}My App{% endblock %}</title>
+  <script src="https://unpkg.com/htmx.org@1.9.5"></script>
   <link href="https://unpkg.com/tabulator-tables@5.5.0/dist/css/tabulator.min.css" rel="stylesheet">
   <script src="https://unpkg.com/tabulator-tables@5.5.0/dist/js/tabulator.min.js"></script>
 </head>
 <body>
   <header>
-    <h1>Spreadsheet Web App</h1>
+    <h1>{% block header %}Spreadsheet Web App{% endblock %}</h1>
     <nav>
-      <a href="{{ url_for('main_page') }}">Main</a> |
+      <a href="{{ url_for('index') }}">Main</a> |
       <a href="{{ url_for('show_table') }}">Table</a>
     </nav>
     <hr>
