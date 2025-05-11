@@ -3,22 +3,26 @@
 {% block title %}{{ context }}{% endblock %}
 
 {% block content %}
-  <h2>{{ context }}</h2>
+  <h2>{{ context}}</h2>
+
   <p>
-    {% if context == "Rows" %}
-      This is the Rows page.
-    {% elif context == "Databases" %}
-      This is the Databases page.
+    {% if context == "Databases" %}
+      Database: none selected.
     {% elif context == "Tables" %}
-      This is the Tables page.
+      Database: {{ current_database if current_database else 'none' }}.
     {% elif context == "Columns" %}
-      This is the Columns page.
-    {% elif context == "Fields" %}
-      This is the Fields page.
+      <pre>
+      Database: {{ current_database if current_database else 'none' }}
+      Table   : {{ current_table if current_table else 'none' }}
+      </pre>
+    {% elif context == "Rows" %}
+      <pre>
+      Database: {{ current_database if current_database else 'none' }}
+      Table   : {{ current_table if current_table else 'none' }}
+      </pre>
     {% endif %}
   </p>
 
-  
   {% if context == "Databases" %}
     <form action="/databases" method="post">
   {% elif context == "Tables" %}
@@ -28,7 +32,7 @@
   {% elif context == "Fields" %}
     <form action="/fields" method="post">
   {% else %}
-    <form hx-post="/add" hx-target="#people" hx-swap="innerHTML" method="post">
+    <form hx-post="/add" hx-target="#details" hx-swap="innerHTML" method="post">
   {% endif %}
     
     <input name="name" placeholder="Enter a name" required>
@@ -43,30 +47,8 @@
         <th>Actions</th>
       </tr>
     </thead>
-    <tbody id="people">
-      {% if context == "Rows" %}
-        {% include "_rows.html" %}
-      {% else %}
-        {% for item in item_list %}
-          <tr id="row-{{ item }}">
-            <td>{{ item }}</td>
-            <td>
-              <button 
-                hx-get="/edit_{{ url_base }}/{{ item }}" 
-                hx-target="#row-{{ item }}" 
-                hx-swap="outerHTML">
-                Edit
-              </button>
-              <button 
-                hx-delete="/delete_{{ url_base }}/{{ item }}" 
-                hx-target="#people" 
-                hx-swap="innerHTML">
-                Delete
-              </button>
-            </td>
-          </tr>
-        {% endfor %}
-      {% endif %}
+    <tbody id="details">
+      {% include "_rows.html" %}
     </tbody>
   </table>
 {% endif %}

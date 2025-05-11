@@ -14,11 +14,12 @@
 </head>
 <body>
   <header>
-    <h1>{% block header %}Spreadsheet Web App{% endblock %}</h1>
+    <h1>{% block header %}Web App{% endblock %}</h1>
     <nav>
       <a href="{{ url_for('databases') }}">Databases</a> |
       <a href="{{ url_for('tables') }}">Tables</a> |
       <a href="{{ url_for('columns') }}">Columns</a> |
+      <a href="{{ url_for('fields') }}">Fields</a> |
       <a href="{{ url_for('index') }}">Rows</a> |
       <a href="{{ url_for('show_table') }}">Tabulator</a>
     </nav>
