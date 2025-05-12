@@ -1,7 +1,8 @@
 # sqlflask.py
-from flask import Flask, render_template, request, g, send_from_directory
+from flask import Flask, session, render_template, request, g, send_from_directory
 import sqlite3
 import os
+
 
 if not os.path.exists("./data"):
     os.makedirs("./data")
@@ -9,10 +10,14 @@ if not os.path.exists("./data"):
 app = Flask(__name__)
 DATABASE = "./data/db.sqlite"
 
+app.secret_key = os.urandom(24)
+
 def get_db():
     db = getattr(g, "_database", None)
     if db is None:
         db = g._database = sqlite3.connect(DATABASE)
+        g.current_database = os.path.basename(DATABASE)  # Set the current database name
+        session["current_database"] = g.current_database  # Update the session
     db.row_factory = sqlite3.Row
     return db
 
@@ -22,10 +27,22 @@ def close_connection(exception):
     if db is not None:
         db.close()
 
+@app.before_request
+def set_initial_context():
+    if not hasattr(g, "context"):
+        g.context = "None"  # Default context
+    g.current_database = session.get("current_database", "none")  # Load from session
+    g.current_table = "None"  # Default table
+
+@app.after_request
+def save_context(response):
+    session["current_database"] = g.get("current_database", "None")  # Save to session
+    return response
+
 @app.route("/")
 def index():
     db = get_db()
-    current_database = "current_database.sqlite"  # Replace with logic to get the current database
+    current_database = g.current_database
     current_table = "details"  # Replace with logic to get the current table
     details = db.execute("SELECT id, name FROM details ORDER BY id DESC").fetchall()
     return render_template(
@@ -38,6 +55,7 @@ def index():
 
 @app.route("/databases", methods=["GET", "POST"])
 def databases():
+    g.context = "Databases"  # Update context to "Databases"
     if request.method == "POST":
         database_name = request.form.get("name")
         if not database_name:
@@ -48,6 +66,13 @@ def databases():
             sqlite3.connect(f"./data/{database_name}.sqlite").close()
         except Exception as e:
             return f"Error: {e}", 400
+
+    # Handle switching the current database
+    selected_database = request.args.get("db")
+    if selected_database:
+        DATABASE = f"./data/{selected_database}"  # Update the global DATABASE variable
+        g.current_database = selected_database
+        session["current_database"] = selected_database
 
     # Dynamically fetch the list of databases from the filesystem
     databases = [
@@ -63,6 +88,7 @@ def databases():
 
 @app.route("/tables", methods=["GET", "POST"])
 def tables():
+    g.context = "Tables"  # Update context to "Tables"
     db = get_db()
     db_name = db.execute("PRAGMA database_list").fetchone()[2]
     if request.method == "POST":
@@ -91,9 +117,10 @@ def tables():
 
 @app.route("/columns", methods=["GET", "POST"])
 def columns():
+    g.context = "Columns"  # Set the context to "Columns"
+    current_database = g.current_database
+    current_table = g.current_table
     db = get_db()
-    g.current_table = request.args.get("current_table", "details")  # Default to "details"
-    current_database = "current_database.sqlite"  # Replace with logic to get the current database
 
     if request.method == "POST":
         column_name = request.form.get("name")
@@ -111,7 +138,6 @@ def columns():
 
     # Fetch updated columns for the table
     columns = db.execute(f"PRAGMA table_info({g.current_table})").fetchall()
-    # Transform columns into a list of dictionaries with id and name
     item_list = [{"id": column["cid"], "name": column["name"]} for column in columns]
     return render_template(
         "index.html",
@@ -120,25 +146,6 @@ def columns():
         current_table=g.current_table,
         item_list=item_list,
     )
-
-@app.route("/fields")
-def fields():
-    db = get_db()
-    current_table = g.get("current_table", "details")
-    if request.method == "POST":
-        field_name = request.form.get("field_name")
-        db.execute(f"ALTER TABLE {current_table} ADD COLUMN {field_name} TEXT")
-        db.commit()
-    fields = db.execute(f"PRAGMA table_info({current_table})").fetchall()
-    return render_template(
-        "index.html",
-        context="Fields",
-        item_list=[field["name"] for field in fields]
-    )
-
-@app.route("/tabulator")
-def show_table():
-    return render_template("tabulator.html")
 
 @app.route('/favicon.ico')
 def favicon():
@@ -153,38 +160,118 @@ def add():
     item_list = db.execute("SELECT id, name FROM details ORDER BY id DESC").fetchall()
     return render_template("_rows.html", item_list=item_list)
 
-@app.route('/edit/<int:person_id>', methods=['GET'])
-def edit_person(person_id):
+@app.route('/edit/<int:item_id>', methods=['GET'])
+def edit_person(item_id):
     db = get_db()
-    person = db.execute("SELECT id, name FROM details WHERE id = ?", (person_id,)).fetchone()
+    person = db.execute("SELECT id, name FROM details WHERE id = ?", (item_id,)).fetchone()
     return render_template("_edit_form.html", person=person)
 
-@app.route('/update/<int:person_id>', methods=['PUT'])
-def update_person(person_id):
+@app.route('/update/<int:item_id>', methods=['PUT'])
+def update_person(item_id):
     name = request.form["name"]
     db = get_db()
-    db.execute("UPDATE details SET name = ? WHERE id = ?", (name, person_id))
+    db.execute("UPDATE details SET name = ? WHERE id = ?", (name, item_id))
     db.commit()
 
     # Fetch the updated record to replace the row
-    person = db.execute("SELECT id, name FROM details WHERE id = ?", (person_id,)).fetchone()
+    person = db.execute("SELECT id, name FROM details WHERE id = ?", (item_id,)).fetchone()
     return render_template("_rows.html", item_list=[person])
 
-@app.route("/row/<int:person_id>")
-def row(person_id):
+@app.route("/row/<int:item_id>")
+def row(item_id):
     db = get_db()
-    person = db.execute("SELECT id, name FROM details WHERE id = ?", (person_id,)).fetchone()
-    return render_template("_row.html", person=person)
 
-@app.route('/delete/<int:person_id>', methods=['DELETE'])
-def delete_person(person_id):
+    if g.context == "Databases":
+        # Fetch the list of databases
+        databases = [
+            {"id": idx, "name": db} for idx, db in enumerate(os.listdir("./data")) if db.endswith(".sqlite")
+        ]
+
+        # Find the database by ID
+        item = next((db for db in databases if db["id"] == item_id), None)
+        if not item:
+            return "Database not found", 404
+
+    elif g.context == "Tables":
+        # Fetch the list of tables
+        tables = db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
+        ).fetchall()
+        item = {"id": item_id, "name": tables[item_id]["name"]} if item_id < len(tables) else None
+        if not item:
+            return "Table not found", 404
+
+    elif g.context == "Columns":
+        # Fetch the list of columns for the current table
+        columns = db.execute(f"PRAGMA table_info({g.current_table})").fetchall()
+        item = {"id": columns[item_id]["cid"], "name": columns[item_id]["name"]} if item_id < len(columns) else None
+        if not item:
+            return "Column not found", 404
+
+    elif g.context == "Rows":
+        # Fetch the row from the current table
+        item = db.execute("SELECT id, name FROM details WHERE id = ?", (item_id,)).fetchone()
+        if not item:
+            return "Row not found", 404
+
+    else:
+        return "Invalid context", 400
+
+    # Render the appropriate row template
+    return render_template("_row.html", item=item)
+
+@app.route('/delete/<int:item_id>', methods=['DELETE'])
+def delete_person(item_id):
     db = get_db()
-    db.execute("DELETE FROM details WHERE id = ?", (person_id,))
-    db.commit()
 
-    # Fetch updated list of details
-    item_list = db.execute("SELECT id, name FROM details ORDER BY id DESC").fetchall()
-    return render_template('_rows.html', item_list=item_list)
+    # Handle deletion based on the current context
+    if g.context == "Rows":
+        db.execute("DELETE FROM details WHERE id = ?", (item_id,))
+        db.commit()
+        item_list = db.execute("SELECT id, name FROM details ORDER BY id DESC").fetchall()
+        return render_template("_rows.html", item_list=item_list)
+
+    elif g.context == "Columns":
+        db.execute(f"ALTER TABLE {g.current_table} DROP COLUMN {item_id}")  # Example logic
+        db.commit()
+        columns = db.execute(f"PRAGMA table_info({g.current_table})").fetchall()
+        item_list = [{"id": column["cid"], "name": column["name"]} for column in columns]
+        return render_template("_columns.html", item_list=item_list)
+
+    elif g.context == "Tables":
+        db.execute(f"DROP TABLE {item_id}")  # Example logic
+        db.commit()
+        tables = db.execute(
+            "SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';"
+        ).fetchall()
+        item_list = [{"id": idx, "name": table["name"]} for idx, table in enumerate(tables)]
+        return render_template("_tables.html", item_list=item_list)
+
+    elif g.context == "Databases":
+        # Fetch the list of databases
+        databases = [
+            {"id": idx, "name": db} for idx, db in enumerate(os.listdir("./data")) if db.endswith(".sqlite")
+        ]
+
+        # Find the database name by id
+        database_to_delete = next((db for db in databases if db["id"] == item_id), None)
+        if not database_to_delete:
+            return f"Database with id {item_id} not found.", 404
+
+        # Delete the database file
+        db_path = f"./data/{database_to_delete['name']}"
+        if os.path.exists(db_path):
+            os.remove(db_path)
+        else:
+            return f"Database {database_to_delete['name']} does not exist.", 404
+
+        # Fetch the updated list of databases
+        updated_databases = [
+            {"id": idx, "name": db} for idx, db in enumerate(os.listdir("./data")) if db.endswith(".sqlite")
+        ]
+        return render_template("_databases.html", item_list=updated_databases)
+
+    return "Invalid context", 400
 
 if __name__ == "__main__":
     # Init DB if needed

@@ -1,6 +1,12 @@
 <tr id="row-{{ person.id }}">
   <td>
-    <input id="name-{{ person.id }}" name="name" value="{{ person.name }}" placeholder="Enter the name" required>
+    <input 
+      id="name-{{ person.id }}" 
+      name="name" 
+      value="{{ person.name }}" 
+      placeholder="Enter the name" 
+      required
+      onkeydown="if (event.key === 'Enter') document.getElementById('save-{{ person.id }}').click();">
   </td>
   <td>
     <button 
