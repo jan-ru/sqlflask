@@ -4,6 +4,7 @@ import sqlite3
 import os
 
 
+# Ensure the data directory exists
 if not os.path.exists("./data"):
     os.makedirs("./data")
 
@@ -274,6 +275,8 @@ def delete_person(item_id):
     return "Invalid context", 400
 
 if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port)
     # Init DB if needed
     with sqlite3.connect(DATABASE) as db:
         db.execute("CREATE TABLE IF NOT EXISTS details (id INTEGER PRIMARY KEY, name TEXT)")
