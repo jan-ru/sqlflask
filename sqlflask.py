@@ -275,9 +275,10 @@ def delete_person(item_id):
     return "Invalid context", 400
 
 if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+    
     # Init DB if needed
     with sqlite3.connect(DATABASE) as db:
         db.execute("CREATE TABLE IF NOT EXISTS details (id INTEGER PRIMARY KEY, name TEXT)")
-    app.run(debug=True)
+    # Get port number from environment variable or use default
+    port = int(os.environ.get("PORT", 8080))
+    app.run(host="0.0.0.0", port=port)
