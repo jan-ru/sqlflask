@@ -1,6 +1,6 @@
 {% import "_macros.html" as macros %}
 {% for item in item_list %}
-  {{ macros.render_row(item, context) }}
+  {{ macros.render_row(item, context, current_database) }}
 {% endfor %}
 {% if item_list|length == 0 %}
   <tr>

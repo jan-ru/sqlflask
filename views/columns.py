@@ -59,6 +59,31 @@ def index():
         item_list=item_list
     )
 
+@columns_bp.route("/add", methods=["POST"])
+def add():
+    db = get_db()
+    g.current_database = session.get("current_database", "none")
+    g.current_table = session.get("current_table", "details")
+    current_table = g.current_table
+    column_name = request.form.get("name")
+    if not column_name:
+        return "Column name is required.", 400
+    try:
+        db.execute(f'ALTER TABLE {current_table} ADD COLUMN "{column_name}" TEXT')
+        db.commit()
+    except sqlite3.OperationalError as e:
+        return f"Error: {e}", 400
+
+    columns = get_all_columns(db, current_table)
+    item_list = columns
+    return render_template(
+        "_rows.html",
+        item_list=item_list,
+        context="Columns",
+        current_database=g.current_database,
+        current_table=current_table
+    )
+
 @columns_bp.route('/select/<column_name>', methods=['GET'])
 def select_column(column_name):
     session["current_column"] = column_name

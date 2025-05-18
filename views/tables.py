@@ -64,6 +64,31 @@ def index():
         item_list=item_list
     )
 
+@tables_bp.route("/add", methods=["POST"])
+def add():
+    db = get_db()
+    g.current_database = session.get("current_database", "none")
+    table_name = request.form.get("name")
+    if not table_name:
+        return "Table name is required.", 400
+    try:
+        db.execute(f'CREATE TABLE IF NOT EXISTS {table_name} (id INTEGER PRIMARY KEY, name TEXT)')
+        db.commit()
+        g.current_table = table_name
+        session["current_table"] = table_name
+    except sqlite3.OperationalError as e:
+        return f"Error: {e}", 400
+
+    tables = get_all_tables(db)
+    item_list = tables
+    return render_template(
+        "_rows.html",
+        item_list=item_list,
+        context="Tables",
+        current_database=g.current_database,
+        current_table=g.current_table
+    )
+
 tables_bp.route('/select/<table_name>', methods=['GET'])
 def select_table(table_name):
     session["current_table"] = table_name

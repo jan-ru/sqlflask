@@ -62,35 +62,47 @@ def select_database(db_name):
     # Redirect to the appropriate view, e.g., tables
     return redirect(url_for('tables.index'))
 
-@database_bp.route('/edit/<db_name>', methods=['GET'])
-def edit(db_name):
-    # Optionally check if the file exists
-    return render_template("_edit_form.html", item={"name": db_name}, context="Databases")
+@database_bp.route('/edit/<int:db_id>', methods=['GET'])
+def edit(db_id):
+    databases = get_all_databases()
+    db = next((d for d in databases if d["id"] == db_id), None)
+    if not db:
+        return "Database not found", 404
+    return render_template("_edit_form.html", item=db, context="Databases")
 
-@database_bp.route('/update/<db_name>', methods=['PUT'])
-def update(db_name):
+@database_bp.route('/update/<int:db_id>', methods=['PUT'])
+def update(db_id):
+    databases = get_all_databases()
+    db = next((d for d in databases if d["id"] == db_id), None)
+    if not db:
+        return "Database not found", 404
+    old_name = db["name"]
     new_name = request.form["name"]
-    old_path = os.path.join("./data", db_name)
+    old_path = os.path.join("./data", old_name)
     new_path = os.path.join("./data", new_name)
     if not os.path.exists(old_path):
-        return f"Database {db_name} does not exist.", 404
+        return f"Database {old_name} does not exist.", 404
     if os.path.exists(new_path):
         return f"Database {new_name} already exists.", 400
     os.rename(old_path, new_path)
     databases = get_all_databases()
     return render_template(
-        "_rows.html", 
-        item_list=databases, 
+        "_rows.html",
+        item_list=databases,
         context="Databases"
     )
 
-@database_bp.route('/delete/<db_name>', methods=['DELETE'])
-def delete(db_name):
-    db_path = os.path.join("./data", db_name)
+@database_bp.route('/delete/<int:db_id>', methods=['DELETE'])
+def delete(db_id):
+    databases = get_all_databases()
+    db = next((d for d in databases if d["id"] == db_id), None)
+    if not db:
+        return f"Database with id {db_id} does not exist.", 404
+    db_path = os.path.join("./data", db["name"])
     if os.path.exists(db_path):
         os.remove(db_path)
     else:
-        return f"Database {db_name} does not exist.", 404
+        return f"Database {db['name']} does not exist.", 404
     databases = get_all_databases()
     return render_template(
         "_rows.html",
