@@ -13,7 +13,7 @@ from flask import Flask, session, render_template, request, g, send_from_directo
 from views.databases import database_bp
 from views.tables import tables_bp
 from views.columns import columns_bp
-from views.rows import rows_bp
+from views.relationships import relationships_bp
 from views.utils import get_db
 import sqlite3
 import os
@@ -38,7 +38,7 @@ if not os.path.exists("./data"):
 app.register_blueprint(database_bp)
 app.register_blueprint(tables_bp)
 app.register_blueprint(columns_bp)
-app.register_blueprint(rows_bp)
+app.register_blueprint(relationships_bp)
 
 @app.teardown_appcontext
 def close_connection(exception):

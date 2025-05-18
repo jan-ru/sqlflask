@@ -8,7 +8,7 @@
     {% elif context == "Columns" and current_database and current_database != "none" and current_table and current_table != "details" %}
       <a href="{{ url_for('columns.select_column', column_name=item['name']) }}">{{ item['name'] }}</a>
     {% elif context == "Rows" %}
-      <a href="{{ url_for('rows.select_row', row_id=item['id']) }}">{{ item['name'] }}</a>
+      <a href="{{ url_for('relationships.select_row', relationship_id=item['id']) }}">{{ item['name'] }}</a>
     {% else %}
       {{ item['name'] }}
     {% endif %}

@@ -24,6 +24,13 @@ def get_all_databases():
 def index():
     g.context = "Databases"
     databases = get_all_databases()
+    if request.headers.get("HX-Request") == "true":
+        # HTMX request: return only the rows partial
+        return render_template(
+            "_rows.html",
+            item_list=databases,
+            context="Databases"
+        )
     return render_template(
         "index.html",
         context="Databases",

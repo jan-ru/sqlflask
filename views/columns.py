@@ -39,6 +39,18 @@ def index():
 
     columns = get_all_columns(db, current_table)
     item_list = columns
+
+    # HTMX partial rendering
+    if request.headers.get("HX-Request") == "true":
+        return render_template(
+            "_rows.html",
+            item_list=item_list,
+            context="Columns",
+            current_database=g.current_database,
+            current_table=current_table,
+        )
+
+    # Full page rendering
     return render_template(
         "index.html",
         context="Columns",

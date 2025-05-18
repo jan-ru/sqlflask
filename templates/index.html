@@ -10,21 +10,21 @@
   Database: {{ current_database if current_database else 'none' }}
   Table   : {{ current_table if current_table else 'none' }}
   Column  : {{ current_column if current_column else 'none' }}
-  Row     : {{ current_row if current_row else 'none' }}
+  Row     : {{ current_relationship if current_relationship else 'none' }}
   </pre>
 </p>
 
-  {% if context == "Databases" %}
-    <form action="/databases" method="post">
-  {% elif context == "Tables" %}
-    <form action="/tables" method="post">
-  {% elif context == "Columns" %}
-    <form action="/columns" method="post">
-  {% elif context == "Fields" %}
-    <form action="/rows" method="post">
-  {% else %}
-    <form hx-post="/add" hx-target="#details" hx-swap="innerHTML" method="post">
-  {% endif %}
+{% if context == "Databases" %}
+  <form hx-post="/databases/add" hx-target="#details" hx-swap="innerHTML" method="post">
+{% elif context == "Tables" %}
+  <form hx-post="/tables/add" hx-target="#details" hx-swap="innerHTML" method="post">
+{% elif context == "Columns" %}
+  <form hx-post="/columns/add" hx-target="#details" hx-swap="innerHTML" method="post">
+{% elif context == "Relationships" %}
+  <form hx-post="/relationships/add" hx-target="#details" hx-swap="innerHTML" method="post">
+{% else %}
+  <form>
+{% endif %}
     
     <input name="name" placeholder="Enter a name" required>
     <button type="submit">Add</button>

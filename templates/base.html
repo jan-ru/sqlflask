@@ -1,7 +1,7 @@
 <!-- templates/base.html                      -->
-<!-- shall contain common elements            -->
+<!-- contains common elements            -->
 <!-- specifically head, navigation and footer -->
-<!-- base, main, index seem to overlap, to be resolved -->
+
 <!doctype html>
 <html lang="en">
 <head>
@@ -19,7 +19,7 @@
       <a href="{{ url_for('database.index') }}">Databases</a> |
       <a href="{{ url_for('tables.index', db=current_database) }}">Tables</a> |
       <a href="{{ url_for('columns.index') }}">Columns</a> |
-      <a href="{{ url_for('index') }}">Rows</a> |
+      <a href="{{ url_for('index') }}">Relationships</a> |
     </nav>
     <hr>
   </header>

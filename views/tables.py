@@ -45,6 +45,17 @@ def index():
     tables = get_all_tables(db)
     item_list = tables
 
+    # HTMX partial rendering
+    if request.headers.get("HX-Request") == "true":
+        return render_template(
+            "_rows.html",
+            item_list=item_list,
+            context="Tables",
+            current_database=g.current_database,
+            current_table=g.get("current_table", "details"),
+        )
+
+    # Full page rendering
     return render_template(
         "index.html",
         context="Tables",
