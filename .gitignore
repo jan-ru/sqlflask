@@ -1,4 +1,4 @@
-# 10-06-2024
+# 18-05-2025
 # Contents:
 # 1. JRM .gitignore
 # 2. Python .gitignore
@@ -10,22 +10,13 @@
 
 # JRM .gitignore
 
-/.quarto/
-/_site/
 .gitignore
 .luarc.json
-lib/.DS_Store
-.quarto/
-_book/
-/output/
-ResearchProposal_files/
+.DS_Store
 *.pdf
-*.html
+#*.html
 *.bib
-cspell.json
 .vscode
-/s2_altair_example_files/
-
 
 # 1. Python .gitignore
 # Source: github/gitignore
@@ -46,7 +37,7 @@ dist/
 downloads/
 eggs/
 .eggs/
-#lib/
+lib/
 lib64/
 parts/
 sdist/
