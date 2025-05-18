@@ -8,7 +8,7 @@ within the currently selected SQLite database. It also includes helper functions
 for retrieving table metadata.
 """
 
-from flask import Blueprint, render_template, request, g, session
+from flask import Blueprint, render_template, request, g, session, redirect, url_for
 from views.utils import get_db
 import sqlite3
 
@@ -24,6 +24,8 @@ def get_all_tables(db):
 def index():
     g.context = "Tables"
     db = get_db()
+    # Always get current_database from session if available
+    g.current_database = session.get("current_database", "none")
 
     # Handle switching the current table
     selected_table = request.args.get("current_table")
@@ -46,10 +48,25 @@ def index():
     return render_template(
         "index.html",
         context="Tables",
-        current_database=g.get("current_database", "none"),
+        current_database=g.current_database,
         current_table=g.get("current_table", "details"),
         item_list=item_list
     )
+
+tables_bp.route('/select/<table_name>', methods=['GET'])
+def select_table(table_name):
+    session["current_table"] = table_name
+    g.current_table = table_name
+    return redirect(url_for('columns.index'))
+
+@tables_bp.route('/edit/<int:table_id>', methods=['GET'])
+def edit_table(table_id):
+    db = get_db()
+    tables = get_all_tables(db)
+    if table_id < 0 or table_id >= len(tables):
+        return "Table not found", 404
+    table = tables[table_id]
+    return render_template("_edit_form.html", item=table, context="Tables")
 
 @tables_bp.route('/update/<int:table_id>', methods=['PUT'])
 def update_table(table_id):

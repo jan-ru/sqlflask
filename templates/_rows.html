@@ -1,40 +1,9 @@
-<!-- _rows.html -->
-
-   {% for item in item_list %}
-    <tr id="row-{{ item['id'] }}">
-      <td>
-        {% if context == "Databases" %}
-          <a href="/databases?db={{ item['name'] }}">{{ item['name'] }}</a>
-        {% elif context == "Tables" %}
-          <a href="/tables?current_table={{ item['name'] }}">{{ item['name'] }}</a>
-        {% elif context == "Columns" %}
-          <a href="/columns?column={{ item['name'] }}">{{ item['name'] }}</a>
-        {% elif context == "Rows" %}
-          {{ item['name'] }}
-        {% endif %}
-      </td>
-      <td>
-        {% if context in ["Databases", "Tables", "Columns", "Rows"] %}
-          <button 
-            hx-get="/edit/{{ item['id'] }}" 
-            hx-target="#row-{{ item['id'] }}" 
-            hx-swap="outerHTML">
-            Edit
-          </button>
-        {% endif %}
-        <button 
-          hx-delete="/{{ context[:-1]|lower }}/delete/{% if context == 'Databases' %}{{ item['name'] }}{% else %}{{ item['id'] }}{% endif %}"
-          hx-target="#details" 
-          hx-swap="innerHTML">
-          Delete
-        </button>
-      </td>
-    </tr>
-    {% endfor %}
-    {% if item_list|length == 0 %}
-      <tr>
-        <td colspan="2">No items found.</td>
-      </tr>
-    {% endif %}
-
-
+{% import "_macros.html" as macros %}
+{% for item in item_list %}
+  {{ macros.render_row(item, context) }}
+{% endfor %}
+{% if item_list|length == 0 %}
+  <tr>
+    <td colspan="2">No items found.</td>
+  </tr>
+{% endif %}

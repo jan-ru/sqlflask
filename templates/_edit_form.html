@@ -1,27 +1,28 @@
-<tr id="row-{{ person.id }}">
+{% set item_id = item.id if item.get('id') is not none else item.name %}
+<tr id="row-{{ item_id }}">
   <td>
-    <input 
-      id="name-{{ person.id }}" 
-      name="name" 
-      value="{{ person.name }}" 
-      placeholder="Enter the name" 
+    <input
+      id="name-{{ item_id }}"
+      name="name"
+      value="{{ item.name }}"
+      placeholder="Enter the {{ context|lower }} name"
       required
-      onkeydown="if (event.key === 'Enter') document.getElementById('save-{{ person.id }}').click();">
+      onkeydown="if (event.key === 'Enter') document.getElementById('save-{{ item_id }}').click();">
   </td>
   <td>
-    <button 
-      hx-put="/update/{{ person.id }}" 
-      hx-target="#row-{{ person.id }}" 
-      hx-swap="outerHTML"
-      hx-include="#name-{{ person.id}}"
+    <button
+      id="save-{{ item_id }}"
+      hx-put="/{{ context|lower }}/update/{{ item_id }}"
+      hx-target="#details"
+      hx-swap="innerHTML"
+      hx-include="#name-{{ item_id }}"
       type="button">
       Save
     </button>
-    
-    <button 
-      hx-get="/row/{{ person.id }}" 
-      hx-target="#row-{{ person.id }}" 
-      hx-swap="outerHTML"
+    <button
+      hx-get="/{{ context|lower }}/"
+      hx-target="#details"
+      hx-swap="innerHTML"
       type="button">
       Cancel
     </button>

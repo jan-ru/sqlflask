@@ -1,0 +1,31 @@
+{% macro render_row(item, context, current_database=None, current_table=None) %}
+<tr id="row-{{ item['id'] }}">
+  <td>
+    {% if context == "Databases" %}
+      <a href="{{ url_for('database.select_database', db_name=item['name']) }}">{{ item['name'] }}</a>
+    {% elif context == "Tables" and current_database and current_database != "none" %}
+      <a href="{{ url_for('tables.select_table', table_name=item['name']) }}">{{ item['name'] }}</a>
+    {% elif context == "Columns" and current_database and current_database != "none" and current_table and current_table != "details" %}
+      <a href="{{ url_for('columns.select_column', column_name=item['name']) }}">{{ item['name'] }}</a>
+    {% elif context == "Rows" %}
+      <a href="{{ url_for('rows.select_row', row_id=item['id']) }}">{{ item['name'] }}</a>
+    {% else %}
+      {{ item['name'] }}
+    {% endif %}
+  </td>
+  <td>
+    <button 
+      hx-get="/{{ context|lower }}/edit/{{ item['id'] }}" 
+      hx-target="#row-{{ item['id'] }}" 
+      hx-swap="outerHTML">
+      Edit
+    </button>
+    <button 
+      hx-delete="/{{ context|lower }}/delete/{{ item['id'] }}"
+      hx-target="#details" 
+      hx-swap="innerHTML">
+      Delete
+    </button>
+  </td>
+</tr>
+{% endmacro %}

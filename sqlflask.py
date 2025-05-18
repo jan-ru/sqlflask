@@ -8,13 +8,23 @@ registers blueprints for modular route handling, and manages
 application-wide context and session logic.
 """
 
+import sentry_sdk
 from flask import Flask, session, render_template, request, g, send_from_directory, Blueprint
 from views.databases import database_bp
 from views.tables import tables_bp
 from views.columns import columns_bp
 from views.rows import rows_bp
+from views.utils import get_db
 import sqlite3
 import os
+
+sentry_sdk.init(
+    dsn="https://88c02152e0ae8ae86b340be92fa2415b@o4509343733121024.ingest.de.sentry.io/4509343736004688",
+    # Add data like request headers and IP for users,
+    # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
+    send_default_pii=True,
+    traces_sample_rate=0.1,
+)
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
@@ -51,8 +61,24 @@ def save_context(response):
 def index():
     db = get_db()
     current_database = g.current_database
-    current_table = "details"  # Replace with logic to get the current table
-    details = db.execute("SELECT id, name FROM details ORDER BY id DESC").fetchall()
+    current_table = g.current_table
+
+    # Check if the 'details' table exists
+    table_exists = db.execute(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='details';"
+    ).fetchone()
+
+    # Check if the 'name' column exists in the 'details' table
+    name_column_exists = False
+    if table_exists:
+        columns = db.execute("PRAGMA table_info(details)").fetchall()
+        name_column_exists = any(col["name"] == "name" for col in columns)
+
+    if table_exists and name_column_exists:
+        details = db.execute("SELECT id, name FROM details ORDER BY id DESC").fetchall()
+    else:
+        details = []
+
     return render_template(
         "index.html",
         context="Rows",
@@ -72,4 +98,4 @@ if __name__ == "__main__":
         db.execute("CREATE TABLE IF NOT EXISTS details (id INTEGER PRIMARY KEY, name TEXT)")
     # Get port number from environment variable or use default
     port = int(os.environ.get("PORT", 8080))
-    app.run(host="0.0.0.0", port=port)
+    app.run(host="0.0.0.0", port=port, debug=False)

@@ -8,7 +8,7 @@ within the currently selected table of the SQLite database. It also includes
 helper functions for retrieving column metadata.
 """
 
-from flask import Blueprint, render_template, request, g
+from flask import Blueprint, render_template, request, g, session, redirect, url_for
 from views.utils import get_db
 import sqlite3
 
@@ -22,7 +22,10 @@ def get_all_columns(db, table):
 def index():
     g.context = "Columns"
     db = get_db()
-    current_table = g.get("current_table", "details")
+    # Restore current_database and current_table from session if present
+    g.current_database = session.get("current_database", "none")
+    g.current_table = session.get("current_table", "details")
+    current_table = g.current_table
 
     if request.method == "POST":
         column_name = request.form.get("name")
@@ -39,15 +42,36 @@ def index():
     return render_template(
         "index.html",
         context="Columns",
-        current_database=g.get("current_database", "none"),
+        current_database=g.current_database,
         current_table=current_table,
         item_list=item_list
     )
 
+@columns_bp.route('/select/<column_name>', methods=['GET'])
+def select_column(column_name):
+    session["current_column"] = column_name
+    g.current_column = column_name
+    return redirect(url_for('rows.index'))
+
+@columns_bp.route('/edit/<int:column_id>', methods=['GET'])
+def edit_column(column_id):
+    db = get_db()
+    g.current_database = session.get("current_database", "none")
+    g.current_table = session.get("current_table", "details")
+    current_table = g.current_table
+    columns = db.execute(f"PRAGMA table_info({current_table})").fetchall()
+    column = next((col for col in columns if col["cid"] == column_id), None)
+    if not column:
+        return "Column not found", 404
+    item = {"id": column["cid"], "name": column["name"]}
+    return render_template("_edit_form.html", item=item, context="Columns")
+
 @columns_bp.route('/update/<int:column_id>', methods=['PUT'])
 def update_column(column_id):
     db = get_db()
-    current_table = g.get("current_table", "details")
+    g.current_database = session.get("current_database", "none")
+    g.current_table = session.get("current_table", "details")
+    current_table = g.current_table
     new_name = request.form["name"]
     columns = db.execute(f"PRAGMA table_info({current_table})").fetchall()
     column = next((col for col in columns if col["cid"] == column_id), None)
@@ -66,7 +90,9 @@ def update_column(column_id):
 @columns_bp.route('/delete/<int:column_id>', methods=['DELETE'])
 def column_delete(column_id):
     db = get_db()
-    current_table = g.get("current_table", "details")
+    g.current_database = session.get("current_database", "none")
+    g.current_table = session.get("current_table", "details")
+    current_table = g.current_table
     columns = db.execute(f"PRAGMA table_info({current_table})").fetchall()
     column = next((col for col in columns if col["cid"] == column_id), None)
     if not column:
