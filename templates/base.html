@@ -16,9 +16,9 @@
   <header>
     <h3>{% block header %}Define SQLite DB (CRUD){% endblock %}</h3>
     <nav>
-      <a href="{{ url_for('databases') }}">Databases</a> |
-      <a href="{{ url_for('tables') }}">Tables</a> |
-      <a href="{{ url_for('columns') }}">Columns</a> |
+      <a href="{{ url_for('database.index') }}">Databases</a> |
+      <a href="{{ url_for('tables.index') }}">Tables</a> |
+      <a href="{{ url_for('columns.index') }}">Columns</a> |
       <a href="{{ url_for('index') }}">Rows</a> |
     </nav>
     <hr>

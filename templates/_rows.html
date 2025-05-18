@@ -6,7 +6,7 @@
         {% if context == "Databases" %}
           <a href="/databases?db={{ item['name'] }}">{{ item['name'] }}</a>
         {% elif context == "Tables" %}
-          <a href="/tables?table={{ item['name'] }}">{{ item['name'] }}</a>
+          <a href="/tables?current_table={{ item['name'] }}">{{ item['name'] }}</a>
         {% elif context == "Columns" %}
           <a href="/columns?column={{ item['name'] }}">{{ item['name'] }}</a>
         {% elif context == "Rows" %}
@@ -23,7 +23,7 @@
           </button>
         {% endif %}
         <button 
-          hx-delete="/delete/{{ item['id'] }}" 
+          hx-delete="/{{ context[:-1]|lower }}/delete/{% if context == 'Databases' %}{{ item['name'] }}{% else %}{{ item['id'] }}{% endif %}"
           hx-target="#details" 
           hx-swap="innerHTML">
           Delete
