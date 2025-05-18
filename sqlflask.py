@@ -19,11 +19,12 @@ import sqlite3
 import os
 
 sentry_sdk.init(
-    dsn="https://88c02152e0ae8ae86b340be92fa2415b@o4509343733121024.ingest.de.sentry.io/4509343736004688",
+    dsn=os.getenv("SENTRY_DSN"),
     # Add data like request headers and IP for users,
     # see https://docs.sentry.io/platforms/python/data-management/data-collected/ for more info
     send_default_pii=True,
     traces_sample_rate=0.1,
+    environment="production",
 )
 
 app = Flask(__name__)
