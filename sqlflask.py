@@ -15,6 +15,7 @@ from views.tables import tables_bp
 from views.columns import columns_bp
 from views.relationships import relationships_bp
 from views.utils import get_db
+from views.data_entry import data_entry_bp
 import sqlite3
 import os
 
@@ -41,6 +42,7 @@ app.register_blueprint(database_bp)
 app.register_blueprint(tables_bp)
 app.register_blueprint(columns_bp)
 app.register_blueprint(relationships_bp)
+app.register_blueprint(data_entry_bp)
 
 @app.teardown_appcontext
 def close_connection(exception):

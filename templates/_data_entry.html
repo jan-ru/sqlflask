@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Enter Data for {{ table_name }}</title>
+</head>
+<body>
+  <h1>Enter Data into {{ table_name }}</h1>
+  <form method="POST">
+  {% for col in columns %}
+    {% if col[1] != 'id' %}
+      <label>{{ col[1] }}</label>
+      <input type="text" name="{{ col[1] }}" /><br>
+    {% endif %}
+  {% endfor %}
+
+  <div style="margin-top: 10px;">
+    <button type="submit">Save</button>
+    <button type="button" onclick="window.history.back()">Cancel</button>
+    <button type="button" disabled>Previous Record</button>
+    <button type="button" disabled>Next Record</button>
+  </div>
+  </form>
+</body>
+</html>

@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Records in {{ table_name }}</title>
+</head>
+<body>
+  <h1>Records in {{ table_name }}</h1>
+  <table border="1">
+    <thead>
+      <tr>
+        {% for col in columns %}
+          <th>{{ col }}</th>
+        {% endfor %}
+        <th>Actions</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for row in rows %}
+        <tr>
+          {% for col in columns %}
+            <td>{{ row[col] }}</td>
+          {% endfor %}
+          <td>
+            <a href="{{ url_for('data_entry.edit_record', table_name=table_name, record_id=row['id']) }}">Edit</a>
+            <form action="{{ url_for('data_entry.delete_record', table_name=table_name, record_id=row['id']) }}" method="post" style="display:inline;">
+              <button type="submit" onclick="return confirm('Delete this record?')">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  <a href="{{ url_for('data_entry.data_entry', table_name=table_name) }}">Add New Record</a>
+</body>
+</html>

@@ -13,6 +13,11 @@
   Relationships: {{ current_relationship if current_relationship else 'none' }}
   </pre>
 </p>
+<p>
+  <a href="{{ url_for('data_entry.data_entry', table_name=current_table) }}">
+    <button type="button">Data Entry</button>
+  </a>
+</p>
 
 {% if context == "Databases" %}
   <form hx-post="/databases/add" hx-target="#details" hx-swap="innerHTML" method="post">
