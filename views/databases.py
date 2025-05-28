@@ -7,16 +7,19 @@ This module provides routes for listing, creating, editing, updating, and deleti
 It also includes helper functions for retrieving database metadata.
 """
 
-from flask import Blueprint, render_template, request, g, session, redirect, url_for
+from flask import Blueprint, render_template, request, g, session, redirect, url_for, current_app
 import os
 import sqlite3
 
 database_bp = Blueprint('database', __name__, url_prefix="/databases")
 
+from flask import current_app
+
 def get_all_databases():
+    data_dir = current_app.config["DATA_DIR"]
     return [
         {"id": idx, "name": db}
-        for idx, db in enumerate(os.listdir("./data"))
+        for idx, db in enumerate(os.listdir(data_dir))
         if db.endswith(".sqlite")
     ]
 
@@ -44,8 +47,10 @@ def add():
     database_name = request.form.get("name")
     if not database_name:
         return "Database name is required.", 400
+    data_dir = current_app.config["DATA_DIR"]
+    db_path = os.path.join(data_dir, f"{database_name}.sqlite")
     try:
-        sqlite3.connect(f"./data/{database_name}.sqlite").close()
+        sqlite3.connect(db_path).close()
     except Exception as e:
         return f"Error: {e}", 400
     databases = get_all_databases()
@@ -72,14 +77,15 @@ def edit(db_id):
 
 @database_bp.route('/update/<int:db_id>', methods=['PUT'])
 def update(db_id):
+    data_dir = current_app.config["DATA_DIR"]
     databases = get_all_databases()
     db = next((d for d in databases if d["id"] == db_id), None)
     if not db:
         return "Database not found", 404
     old_name = db["name"]
     new_name = request.form["name"]
-    old_path = os.path.join("./data", old_name)
-    new_path = os.path.join("./data", new_name)
+    old_path = os.path.join(data_dir, old_name)
+    new_path = os.path.join(data_dir, new_name)
     if not os.path.exists(old_path):
         return f"Database {old_name} does not exist.", 404
     if os.path.exists(new_path):
@@ -94,11 +100,12 @@ def update(db_id):
 
 @database_bp.route('/delete/<int:db_id>', methods=['DELETE'])
 def delete(db_id):
+    data_dir = current_app.config["DATA_DIR"]
     databases = get_all_databases()
     db = next((d for d in databases if d["id"] == db_id), None)
     if not db:
         return f"Database with id {db_id} does not exist.", 404
-    db_path = os.path.join("./data", db["name"])
+    db_path = os.path.join(data_dir, db["name"])
     if os.path.exists(db_path):
         os.remove(db_path)
     else:

@@ -12,11 +12,11 @@ from flask import Blueprint, render_template, request, g, session, redirect, url
 from views.utils import get_db
 import sqlite3
 
-relationships_bp = Blueprint('rows', __name__, url_prefix="/rows")
+relationships_bp = Blueprint('relationships', __name__, url_prefix="/relationships")
 
 @relationships_bp.route("/", methods=["GET"])
 def index():
-    g.context = "Rows"
+    g.context = "Relationships"
     db = get_db()
     g.current_database = session.get("current_database", "none")
     g.current_table = session.get("current_table", "details")
@@ -35,7 +35,7 @@ def index():
 
     return render_template(
         "index.html",
-        context="Rows",
+        context="Relationships",
         current_database=g.current_database,
         current_table=current_table,
         item_list=rows
@@ -51,13 +51,13 @@ def add():
     db.execute(f"INSERT INTO {current_table} (name) VALUES (?)", (name,))
     db.commit()
     item_list = db.execute(f"SELECT id, name FROM {current_table} ORDER BY id DESC").fetchall()
-    return render_template("_rows.html", item_list=item_list, context="Rows")
+    return render_template("_rows.html", item_list=item_list, context="Relationships")
 
 @relationships_bp.route('/select/<int:row_id>', methods=['GET'])
 def select_row(row_id):
     session["current_row"] = row_id
     g.current_row = row_id
-    return redirect(url_for('rows.index'))
+    return redirect(url_for('relationships.index'))
 
 @relationships_bp.route('/edit/<int:item_id>', methods=['GET'])
 def edit_row(item_id):
@@ -66,7 +66,7 @@ def edit_row(item_id):
     g.current_table = session.get("current_table", "details")
     current_table = g.current_table
     row = db.execute(f"SELECT id, name FROM {current_table} WHERE id = ?", (item_id,)).fetchone()
-    return render_template("_edit_form.html", item=row, context="Rows")
+    return render_template("_edit_form.html", item=row, context="Relationships")
 
 @relationships_bp.route('/update/<int:item_id>', methods=['PUT'])
 def update_row(item_id):
@@ -89,4 +89,4 @@ def row_delete(item_id):
     db.execute(f"DELETE FROM {current_table} WHERE id = ?", (item_id,))
     db.commit()
     item_list = db.execute(f"SELECT id, name FROM {current_table} ORDER BY id DESC").fetchall()
-    return render_template("_rows.html", item_list=item_list, context="Rows")
+    return render_template("_rows.html", item_list=item_list, context="Relationships")

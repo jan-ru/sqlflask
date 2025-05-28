@@ -15,3 +15,5 @@ Anyway, it soon becomes apparant that certain use cases require persistence. Hen
 Both the Deno and Python prototypes have been deployed to Railway (via GitHub). Neither is finished but both are running ok. (Albeit the flask version directly on gunicorn. Caddy needs to be put in front of it as a reverse proxy.)
 
 The current idea is to pause doing a third (FastAPI) prototype. Instead I will look to improve SQLFlask to try and do some production work with it (either grading or excel).
+
+The stack I am considering: SQLite, Polars, Flask, Jinja2, Svelte/Tanstack tables.

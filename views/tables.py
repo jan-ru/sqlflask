@@ -89,7 +89,7 @@ def add():
         current_table=g.current_table
     )
 
-tables_bp.route('/select/<table_name>', methods=['GET'])
+@tables_bp.route('/select/<table_name>', methods=['GET'])
 def select_table(table_name):
     session["current_table"] = table_name
     g.current_table = table_name

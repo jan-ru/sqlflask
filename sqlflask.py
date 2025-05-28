@@ -29,11 +29,13 @@ sentry_sdk.init(
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
-DATABASE = "./data/db.sqlite"
+DATA_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "data"))
+app.config["DATA_DIR"] = DATA_DIR
+
 
 # Ensure the data directory exists
-if not os.path.exists("./data"):
-    os.makedirs("./data")
+if not os.path.exists(DATA_DIR):
+    os.makedirs(DATA_DIR)
 
 app.register_blueprint(database_bp)
 app.register_blueprint(tables_bp)
@@ -94,8 +96,8 @@ def favicon():
 
 if __name__ == "__main__":
     
-    # Init DB if needed
-    with sqlite3.connect(DATABASE) as db:
+    default_db_path = os.path.join(DATA_DIR, "db.sqlite")
+    with sqlite3.connect(default_db_path) as db:
         db.execute("CREATE TABLE IF NOT EXISTS details (id INTEGER PRIMARY KEY, name TEXT)")
     # Get port number from environment variable or use default
     port = int(os.environ.get("PORT", 8080))
