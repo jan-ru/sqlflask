@@ -16,9 +16,9 @@ from .views.columns import columns_bp
 from .views.relationships import relationships_bp
 from .views.data_entry import data_entry_bp
 from .views.utils import get_db
+from .config import DB_PATH, EXCEL_DIR
 import sqlite3
 import os
-from config import DB_PATH, EXCEL_DIR
 
 
 sentry_sdk.init(
