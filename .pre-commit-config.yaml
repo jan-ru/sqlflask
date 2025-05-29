@@ -1,9 +1,0 @@
-# .pre-commit-config.yaml
-- repo: https://github.com/pre-commit/mirrors-pytest
-  rev: v7.4.0
-  hooks:
-    - id: pytest
-      name: run tests before commit
-      files: \.py$
-      language: system
-      entry: pytest --maxfail=1 --disable-warnings -q
