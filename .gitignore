@@ -17,6 +17,7 @@
 #*.html
 *.bib
 .vscode
+data/
 
 # 1. Python .gitignore
 # Source: github/gitignore

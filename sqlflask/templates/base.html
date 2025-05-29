@@ -14,7 +14,7 @@
 </head>
 <body>
   <header>
-    <h3>{% block header %}Define SQLite DB (CRUD){% endblock %}</h3>
+    <h3>{% block header %}{{ project_name }} v{{ project_version }}{% endblock %}</h3>
     <nav>
       <a href="{{ url_for('database.index') }}">Databases</a> |
       <a href="{{ url_for('tables.index', db=current_database) }}">Tables</a> |

@@ -4,8 +4,8 @@ import sqlite3
 from pathlib import Path
 from datetime import datetime
 
-DB_PATH = Path("your_sqlflask.db")  # Path to your actual sqlflask SQLite DB
-EXCEL_DIR = Path("excel_versions")
+from sqlflask.config import DB_PATH, EXCEL_DIR
+
 EXCEL_DIR.mkdir(exist_ok=True)
 EXCEL_LATEST = EXCEL_DIR / "latest.xlsx"
 TABLE_NAME = "your_table"  # Replace with actual table name from sqlflask
