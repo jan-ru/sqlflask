@@ -16,5 +16,6 @@ dependencies = [
   "polars>=1.30.0",
   "flask-htmx>=0.4.0",
   "flask-appbuilder>=4.7.0",
+  "pre-commit>=3.4.0",
 ]
 requires-python = ">=3.12"
