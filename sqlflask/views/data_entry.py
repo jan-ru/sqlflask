@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for
-from views.utils import get_db
+from .utils import get_db
 
 data_entry_bp = Blueprint('data_entry', __name__)
 

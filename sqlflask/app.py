@@ -14,8 +14,8 @@ from .views.databases import database_bp
 from .views.tables import tables_bp
 from .views.columns import columns_bp
 from .views.relationships import relationships_bp
-from .views.utils import get_db
 from .views.data_entry import data_entry_bp
+from .views.utils import get_db
 import sqlite3
 import os
 from config import DB_PATH, EXCEL_DIR

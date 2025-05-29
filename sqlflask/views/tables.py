@@ -9,7 +9,7 @@ for retrieving table metadata.
 """
 
 from flask import Blueprint, render_template, request, g, session, redirect, url_for
-from views.utils import get_db
+from utils import get_db
 import sqlite3
 
 tables_bp = Blueprint('tables', __name__, url_prefix="/tables")

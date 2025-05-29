@@ -9,7 +9,7 @@ helper functions for retrieving row data.
 """
 
 from flask import Blueprint, render_template, request, g, session, redirect, url_for
-from views.utils import get_db
+from utils import get_db
 import sqlite3
 
 relationships_bp = Blueprint('relationships', __name__, url_prefix="/relationships")

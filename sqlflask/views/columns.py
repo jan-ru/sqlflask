@@ -9,7 +9,7 @@ helper functions for retrieving column metadata.
 """
 
 from flask import Blueprint, render_template, request, g, session, redirect, url_for
-from views.utils import get_db
+from utils import get_db
 import sqlite3
 
 columns_bp = Blueprint('columns', __name__, url_prefix="/columns")
