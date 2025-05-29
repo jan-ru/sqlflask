@@ -1,5 +1,6 @@
 
 # TIL
+
 ## 2025-05-05
 
 I'll write the TIL here and later move it to the correct file.
@@ -12,8 +13,9 @@ Trying to stay away from full fledged frontend frameworks like react/vue, I am t
 
 Anyway, it soon becomes apparant that certain use cases require persistence. Hence I am now trying to work with sqlite3. Second, I did a prototype with Python.
 
-Both the Deno and Python prototypes have been deployed to Railway (via GitHub). Neither is finished but both are running ok. (Albeit the flask version directly on gunicorn. Caddy needs to be put in front of it as a reverse proxy.)
-
 The current idea is to pause doing a third (FastAPI) prototype. Instead I will look to improve SQLFlask to try and do some production work with it (either grading or excel).
 
+## 2025-05-29
+
 The stack I am considering: SQLite, Polars, Flask, Jinja2, Svelte/Tanstack tables.
+Utility services I am planning to use: sentry, auth0

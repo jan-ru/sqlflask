@@ -2,7 +2,7 @@ import pytest
 import sys
 import os
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
-from sqlflask import app
+from sqlflask.app import app
 
 @pytest.fixture
 def client():
@@ -54,7 +54,7 @@ def test_delete_database(client):
     response = client.get("/databases/")
     assert b"delete_me.sqlite" in response.data
     # Assuming it's the last in the list
-    from sqlflask import app
+    from sqlflask.app import app
     with app.app_context():
         from views.databases import get_all_databases
         dbs = get_all_databases()
