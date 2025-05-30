@@ -18,6 +18,7 @@ from .views.data_entry import data_entry_bp
 from .views.utils import get_db
 from .config import DB_PATH, EXCEL_DIR
 import sqlite3
+import tomllib
 import os
 
 
@@ -40,6 +41,21 @@ app.register_blueprint(tables_bp)
 app.register_blueprint(columns_bp)
 app.register_blueprint(relationships_bp)
 app.register_blueprint(data_entry_bp)
+
+
+def get_project_metadata():
+    pyproject_path = os.path.join(os.path.dirname(__file__), "..", "pyproject.toml")
+    with open(pyproject_path, "rb") as f:
+        data = tomllib.load(f)
+    project = data.get("project", {})
+    return {
+        "project_name": project.get("name", ""),
+        "project_version": project.get("version", ""),
+    }
+
+@app.context_processor
+def inject_project_metadata():
+    return get_project_metadata()
 
 @app.teardown_appcontext
 def close_connection(exception):
